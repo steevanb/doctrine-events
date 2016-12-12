@@ -1,0 +1,19 @@
+{
+    "name": "steevanb/doctrine-events",
+    "license": "MIT",
+    "description": "Add Doctrine events",
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": { "steevanb\\DoctrineEvents\\": "" }
+    },
+    "require": {
+        "php" : "^5.4.0 || ^7.0",
+        "doctrine/orm": "^2.4.8"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/steevanb/doctrine-events.git"
+        }
+    ]
+}
