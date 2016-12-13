@@ -2,53 +2,31 @@
 
 namespace steevanb\DoctrineEvents\Doctrine\ORM\Event;
 
-use Doctrine\Common\EventArgs;
 use Doctrine\ORM\EntityManagerInterface;
 
-class OnCreateEntityOverrideLocalValuesEventArgs extends EventArgs
+class OnCreateEntityOverrideLocalValuesEventArgs extends AbstractOnCreateEntityEventArgs
 {
-    const EVENT_NAME = 'onCreateEntityOvverideLocalValues';
-
-    /** @var EntityManagerInterface */
-    protected $em;
+    const EVENT_NAME = 'onCreateEntityOverrideLocalValues';
 
     /** @var bool */
     protected $overrideLocalValues;
 
-    /** @var string */
-    protected $className;
-
-    /** @var array */
-    protected $data;
-
-    /** @var array */
-    protected $hints;
-
     /**
      * @param EntityManagerInterface $em
-     * @param bool $overrideLocalValues
      * @param string $className
      * @param array $data
      * @param array $hints
+     * @param bool $overrideLocalValues
      */
     public function __construct(
         EntityManagerInterface $em,
-        $overrideLocalValues,
         $className,
         array $data,
-        array $hints = []
+        array $hints,
+        $overrideLocalValues
     ) {
-        $this->em = $em;
+        parent::__construct($em, $className, $data, $hints);
         $this->setOverrideLocalValues($overrideLocalValues);
-        $this->className = $className;
-        $this->data = $data;
-        $this->hints = $hints;
-    }
-
-    /** @return EntityManagerInterface */
-    public function getEntityManager()
-    {
-        return $this->em;
     }
 
     /**
@@ -66,23 +44,5 @@ class OnCreateEntityOverrideLocalValuesEventArgs extends EventArgs
     public function getOverrideLocalValues()
     {
         return $this->overrideLocalValues;
-    }
-
-    /** @return string */
-    public function getClassName()
-    {
-        return $this->className;
-    }
-
-    /** @return array */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    /** @return array */
-    public function getHints()
-    {
-        return $this->hints;
     }
 }

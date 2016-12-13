@@ -13,6 +13,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork as DoctrineUnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use steevanb\DoctrineEvents\Behavior\ReflectionTrait;
+use steevanb\DoctrineEvents\Doctrine\ORM\Event\OnCreateEntityDefineFieldValuesEventArgs;
 use steevanb\DoctrineEvents\Doctrine\ORM\Event\OnCreateEntityOverrideLocalValuesEventArgs;
 
 class UnitOfWork extends DoctrineUnitOfWork
@@ -116,18 +117,19 @@ class UnitOfWork extends DoctrineUnitOfWork
             $overrideLocalValues = true;
         }
 
-        $eventArgs = $this->dispatchOnCreateEntityOverrideLocalValues($overrideLocalValues, $className, $data, $hints);
-
+        $eventArgs = $this->dispatchOnCreateEntityOverrideLocalValues($className, $data, $hints, $overrideLocalValues);
         if ($eventArgs->getOverrideLocalValues() === false) {
-            d('ovveride false');
             return $entity;
         }
+        unset($eventArgs);
 
+        $eventArgs = $this->dispatchOnCreateEntityDefineFieldValues($className, $data, $hints, $entity);
         foreach ($data as $field => $value) {
-            if (isset($class->fieldMappings[$field])) {
+            if (isset($class->fieldMappings[$field]) && $eventArgs->isValueDefined($field) === false) {
                 $class->reflFields[$field]->setValue($entity, $value);
             }
         }
+        unset($eventArgs);
 
         // Loading the entity right here, if its in the eager loading map get rid of it there.
         $this->unsetParentEagerLoadingEntities($class->rootEntityName, $idHash);
@@ -496,22 +498,37 @@ class UnitOfWork extends DoctrineUnitOfWork
     }
 
     /**
-     * @param bool $override
      * @param string $className
      * @param array $data
      * @param array $hints
+     * @param bool $override
      * @return OnCreateEntityOverrideLocalValuesEventArgs
      */
-    protected function dispatchOnCreateEntityOverrideLocalValues($override, $className, array $data, array $hints)
+    protected function dispatchOnCreateEntityOverrideLocalValues($className, array $data, array $hints, $override)
     {
         $eventArgs = new OnCreateEntityOverrideLocalValuesEventArgs(
             $this->em,
-            $override,
             $className,
             $data,
-            $hints
+            $hints,
+            $override
         );
         $this->em->getEventManager()->dispatchEvent(OnCreateEntityOverrideLocalValuesEventArgs::EVENT_NAME, $eventArgs);
+
+        return $eventArgs;
+    }
+
+    /**
+     * @param string $className
+     * @param array $data
+     * @param array $hints
+     * @param object $entity
+     * @return OnCreateEntityDefineFieldValuesEventArgs
+     */
+    protected function dispatchOnCreateEntityDefineFieldValues($className, array $data, array $hints, $entity)
+    {
+        $eventArgs = new OnCreateEntityDefineFieldValuesEventArgs($this->em, $className, $data, $hints, $entity);
+        $this->em->getEventManager()->dispatchEvent(OnCreateEntityDefineFieldValuesEventArgs::EVENT_NAME, $eventArgs);
 
         return $eventArgs;
     }
