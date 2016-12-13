@@ -13,6 +13,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork as DoctrineUnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use steevanb\DoctrineEvents\Behavior\ReflectionTrait;
+use steevanb\DoctrineEvents\Doctrine\ORM\Event\OnCreateEntityOverrideLocalValuesEventArgs;
 
 class UnitOfWork extends DoctrineUnitOfWork
 {
@@ -115,7 +116,10 @@ class UnitOfWork extends DoctrineUnitOfWork
             $overrideLocalValues = true;
         }
 
-        if ( ! $overrideLocalValues) {
+        $eventArgs = $this->dispatchOnCreateEntityOverrideLocalValues($overrideLocalValues, $className, $data, $hints);
+
+        if ($eventArgs->getOverrideLocalValues() === false) {
+            d('ovveride false');
             return $entity;
         }
 
@@ -489,5 +493,26 @@ class UnitOfWork extends DoctrineUnitOfWork
     protected function newInstance($class)
     {
         return $this->callParentPrivateMethod('newInstance', $class);
+    }
+
+    /**
+     * @param bool $override
+     * @param string $className
+     * @param array $data
+     * @param array $hints
+     * @return OnCreateEntityOverrideLocalValuesEventArgs
+     */
+    protected function dispatchOnCreateEntityOverrideLocalValues($override, $className, array $data, array $hints)
+    {
+        $eventArgs = new OnCreateEntityOverrideLocalValuesEventArgs(
+            $this->em,
+            $override,
+            $className,
+            $data,
+            $hints
+        );
+        $this->em->getEventManager()->dispatchEvent(OnCreateEntityOverrideLocalValuesEventArgs::EVENT_NAME, $eventArgs);
+
+        return $eventArgs;
     }
 }
