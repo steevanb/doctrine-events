@@ -8,7 +8,6 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager as DoctrineEntityManager;
 use Doctrine\ORM\ORMException;
 use steevanb\DoctrineEvents\Behavior\ReflectionTrait;
-use steevanb\DoctrineStats\Doctrine\ORM\Proxy\ProxyFactory;
 
 class EntityManager extends DoctrineEntityManager
 {
@@ -20,9 +19,9 @@ class EntityManager extends DoctrineEntityManager
      * @param mixed $conn
      * @param Configuration $config
      * @param EventManager|null $eventManager
-     * @return EntityManager
+     * @return $this
      * @throws ORMException
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \InvalidArgumentException
      */
     public static function create($conn, Configuration $config, EventManager $eventManager = null)
     {
@@ -59,12 +58,6 @@ class EntityManager extends DoctrineEntityManager
     {
         parent::__construct($conn, $config, $eventManager);
 
-        $this->setParentPrivatePropertyValue('proxyFactory', new ProxyFactory(
-            $this,
-            $config->getProxyDir(),
-            $config->getProxyNamespace(),
-            $config->getAutoGenerateProxyClasses()
-        ));
         $this->setParentPrivatePropertyValue('unitOfWork', new UnitOfWork($this));
     }
 }
