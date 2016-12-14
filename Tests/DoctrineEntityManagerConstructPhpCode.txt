@@ -1,0 +1,26 @@
+    {
+        $this->conn              = $conn;
+        $this->config            = $config;
+        $this->eventManager      = $eventManager;
+
+        $metadataFactoryClassName = $config->getClassMetadataFactoryName();
+
+        $this->metadataFactory = new $metadataFactoryClassName;
+        $this->metadataFactory->setEntityManager($this);
+        $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
+
+        $this->repositoryFactory = $config->getRepositoryFactory();
+        $this->unitOfWork        = new UnitOfWork($this);
+        $this->proxyFactory      = new ProxyFactory(
+            $this,
+            $config->getProxyDir(),
+            $config->getProxyNamespace(),
+            $config->getAutoGenerateProxyClasses()
+        );
+
+        if ($config->isSecondLevelCacheEnabled()) {
+            $cacheConfig    = $config->getSecondLevelCacheConfiguration();
+            $cacheFactory   = $cacheConfig->getCacheFactory();
+            $this->cache    = $cacheFactory->createCache($this);
+        }
+    }

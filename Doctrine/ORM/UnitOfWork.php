@@ -47,7 +47,6 @@ class UnitOfWork extends DoctrineUnitOfWork
     public function createEntity($className, array $data, &$hints = array())
     {
         $class = $this->em->getClassMetadata($className);
-        //$isReadOnly = isset($hints[Query::HINT_READ_ONLY]);
 
         $id = $this->identifierFlattener->flattenIdentifier($class, $data);
         $idHash = implode(' ', $id);
@@ -194,7 +193,6 @@ class UnitOfWork extends DoctrineUnitOfWork
 
                     $associatedId = array();
 
-                    // TODO: Is this even computed right in all cases of composite keys?
                     foreach ($assoc['targetToSourceKeyColumns'] as $targetColumn => $srcColumn) {
                         $joinColumnValue = isset($data[$srcColumn]) ? $data[$srcColumn] : null;
 
@@ -227,8 +225,6 @@ class UnitOfWork extends DoctrineUnitOfWork
 
                     // Foreign key is set
                     // Check identity map first
-                    // FIXME: Can break easily with composite keys if join column values are in
-                    //        wrong order. The correct order is the one in ClassMetadata#identifier.
                     $relatedIdHash = implode(' ', $associatedId);
 
                     $identityMap = $this->getParentPrivatePropertyValue('identityMap');
@@ -275,7 +271,6 @@ class UnitOfWork extends DoctrineUnitOfWork
 
                                 // Deferred eager load only works for single identifier classes
                                 case (isset($hints[self::HINT_DEFEREAGERLOAD]) && ! $targetClass->isIdentifierComposite):
-                                    // TODO: Is there a faster approach?
                                     $this->setParentEagerLoadingEntities(
                                         $targetClass->rootEntityName,
                                         $relatedIdHash,
@@ -289,7 +284,6 @@ class UnitOfWork extends DoctrineUnitOfWork
                                     break;
 
                                 default:
-                                    // TODO: This is very imperformant, ignore it?
                                     $newValue = $this->em->find($assoc['targetEntity'], $associatedId);
                                     break;
                             }
