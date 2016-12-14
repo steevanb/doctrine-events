@@ -1,7 +1,7 @@
 [![version](https://img.shields.io/badge/version-1.0.0-green.svg)](https://github.com/steevanb/doctrine-events/tree/1.0.0)
 [![doctrine](https://img.shields.io/badge/doctrine/orm-^2.5.0-blue.svg)](http://www.doctrine-project.org)
-[![php](https://img.shields.io/badge/php-^5.4.6 || ^7.0-blue.svg)](http://www.doctrine-project.org)
-![Lines](https://img.shields.io/badge/code lines-XXXX-green.svg)
+[![php](https://img.shields.io/badge/php-^5.4.6 || ^7.0-blue.svg)](http://www.php.net)
+![Lines](https://img.shields.io/badge/code lines-988-green.svg)
 ![Total Downloads](https://poser.pugx.org/steevanb/doctrine-events/downloads)
 [![SensionLabsInsight](https://img.shields.io/badge/SensionLabsInsight-platinum-brightgreen.svg)](https://insight.sensiolabs.com/projects/c0ecb586-f4b3-472d-8202-e2e2a6a2f474/analyses/2)
 [![Scrutinizer](https://scrutinizer-ci.com/g/steevanb/doctrine-events/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/steevanb/doctrine-events/)
@@ -20,12 +20,12 @@ or if this entity is already known and fields are already defined.
 onCreateEntityDefineFieldValues
 -------------------------------
 
-Dispactched when UnitOfWork defined entity field values
+Dispactched when UnitOfWork define entity field values
 
 Installation
 ------------
 
-Add it to your composeR.json :
+Add it to your composer.json :
 ```yml
 {
     "require": {
