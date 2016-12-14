@@ -298,7 +298,7 @@ class UnitOfWork extends DoctrineUnitOfWork
                             ) {
                                 $newValue->addPropertyChangedListener($this);
                             }
-                            $this->setParentEntityStates($oid, static::STATE_MANAGED);
+                            $this->setParentEntityStates($newValueOid, static::STATE_MANAGED);
                             // make sure that when an proxy is then finally loaded, $this->originalEntityData is set also!
                             break;
                     }
