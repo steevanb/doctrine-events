@@ -116,11 +116,10 @@ class UnitOfWork extends DoctrineUnitOfWork
             $overrideLocalValues = true;
         }
 
-        $eventArgs = $this->dispatchOnCreateEntityOverrideLocalValues($className, $data, $hints, $overrideLocalValues);
-        if ($eventArgs->getOverrideLocalValues() === false) {
+        $overrideLocalValues = $this->dispatchOnCreateEntityOverrideLocalValues($className, $data, $hints, $overrideLocalValues);
+        if ($overrideLocalValues === false) {
             return $entity;
         }
-        unset($eventArgs);
 
         $eventArgs = $this->dispatchOnCreateEntityDefineFieldValues($className, $data, $hints, $entity);
         foreach ($data as $field => $value) {
@@ -500,16 +499,24 @@ class UnitOfWork extends DoctrineUnitOfWork
      */
     protected function dispatchOnCreateEntityOverrideLocalValues($className, array $data, array $hints, $override)
     {
-        $eventArgs = new OnCreateEntityOverrideLocalValuesEventArgs(
-            $this->em,
-            $className,
-            $data,
-            $hints,
-            $override
-        );
-        $this->em->getEventManager()->dispatchEvent(OnCreateEntityOverrideLocalValuesEventArgs::EVENT_NAME, $eventArgs);
+        if ($this->em->getEventManager()->hasListeners(OnCreateEntityOverrideLocalValuesEventArgs::EVENT_NAME)) {
+            $eventArgs = new OnCreateEntityOverrideLocalValuesEventArgs(
+                $this->em,
+                $className,
+                $data,
+                $hints,
+                $override
+            );
+            $this->em->getEventManager()->dispatchEvent(
+                OnCreateEntityOverrideLocalValuesEventArgs::EVENT_NAME,
+                $eventArgs
+            );
+            $return = $eventArgs->getOverrideLocalValues();
+        } else {
+            $return = $override;
+        }
 
-        return $eventArgs;
+        return $return;
     }
 
     /**
