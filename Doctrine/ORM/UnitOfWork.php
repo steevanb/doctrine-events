@@ -15,6 +15,7 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
 use steevanb\DoctrineEvents\Behavior\ReflectionTrait;
 use steevanb\DoctrineEvents\Doctrine\ORM\Event\OnCreateEntityDefineFieldValuesEventArgs;
 use steevanb\DoctrineEvents\Doctrine\ORM\Event\OnCreateEntityOverrideLocalValuesEventArgs;
+use steevanb\DoctrineEvents\Doctrine\ORM\Event\OnNewEntityInstanceEventArgs;
 
 class UnitOfWork extends DoctrineUnitOfWork
 {
@@ -482,12 +483,15 @@ class UnitOfWork extends DoctrineUnitOfWork
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata $classMetadata
      * @return ObjectManagerAware|object
      */
-    protected function newInstance($class)
+    protected function newInstance(ClassMetadata $classMetadata)
     {
-        return $this->callParentPrivateMethod('newInstance', $class);
+        $entity = $this->callParentPrivateMethod('newInstance', $classMetadata);
+        $this->dispatchOnNewEntityInstance($classMetadata, $entity);
+
+        return $entity;
     }
 
     /**
@@ -495,7 +499,7 @@ class UnitOfWork extends DoctrineUnitOfWork
      * @param array $data
      * @param array $hints
      * @param bool $override
-     * @return OnCreateEntityOverrideLocalValuesEventArgs
+     * @return bool
      */
     protected function dispatchOnCreateEntityOverrideLocalValues($className, array $data, array $hints, $override)
     {
@@ -532,5 +536,19 @@ class UnitOfWork extends DoctrineUnitOfWork
         $this->em->getEventManager()->dispatchEvent(OnCreateEntityDefineFieldValuesEventArgs::EVENT_NAME, $eventArgs);
 
         return $eventArgs;
+    }
+
+    /**
+     * @param ClassMetadata $classMetadata
+     * @param object $entity
+     */
+    protected function dispatchOnNewEntityInstance(ClassMetadata $classMetadata, $entity)
+    {
+        if ($this->em->getEventManager()->hasListeners(OnNewEntityInstanceEventArgs::EVENT_NAME)) {
+            $this->em->getEventManager()->dispatchEvent(
+                OnNewEntityInstanceEventArgs::EVENT_NAME,
+                new OnNewEntityInstanceEventArgs($this->em, $classMetadata, $entity)
+            );
+        }
     }
 }
