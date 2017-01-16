@@ -16,7 +16,7 @@ Add some events to Doctrine 2.5
 onCreateEntityOverrideLocalValues
 ---------------------------------
 
-Dispacted when UnitOfWork try to know if current entity must be filled with values retrieved from query,
+Dispatched when UnitOfWork try to know if current entity must be filled with values retrieved from query,
 or if this entity is already known and fields are already defined.
 
 onCreateEntityDefineFieldValues
@@ -49,5 +49,5 @@ parameters:
 Some lib who use it
 -------------------
 
-[https://github.com/steevanb/doctrine-entity-merger](steevanb/doctrine-entity-merger) : add MERGE_ENTITY hint
+[https://github.com/steevanb/doctrine-entity-merger](https://github.com/steevanb/doctrine-entity-merger) : add MERGE_ENTITY hint
 to define fields loaded with multiple queries, with PARTIAL, instead of returning first hydrated entity
