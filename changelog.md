@@ -1,3 +1,8 @@
+1.1.1 (2017-01-17)
+------------------
+
+- Remove UnitOfWork::newInstance() parameter type, to fix PHP < 5.6.11 bug with private / protected
+
 1.1.0 (2017-01-16)
 ------------------
 
