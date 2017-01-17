@@ -486,7 +486,7 @@ class UnitOfWork extends DoctrineUnitOfWork
      * @param ClassMetadata $classMetadata
      * @return ObjectManagerAware|object
      */
-    protected function newInstance(ClassMetadata $classMetadata)
+    protected function newInstance($classMetadata)
     {
         $entity = $this->callParentPrivateMethod('newInstance', $classMetadata);
         $this->dispatchOnNewEntityInstance($classMetadata, $entity);
