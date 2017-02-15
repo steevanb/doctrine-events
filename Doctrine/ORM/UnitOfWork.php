@@ -361,6 +361,27 @@ class UnitOfWork extends DoctrineUnitOfWork
     }
 
     /**
+     * Fix bug when entity is added / removed before flush, and extraUpdate are added
+     * scheduleForDelete() do not remove $entity from extraUpdates
+     * Ex : persist($entity), $uow->scheduleExtraUpdate($entity, [...]), $uow->scheduleForDelete($entity)
+     * @param object $entity
+     */
+    public function scheduleForDelete($entity)
+    {
+        $oid = spl_object_hash($entity);
+        $extraUpdates = $this->getParentPrivatePropertyValue('extraUpdates');
+        if (
+            isset($this->getParentPrivatePropertyValue('entityInsertions')[$oid])
+            && isset($extraUpdates[$oid])
+        ) {
+            unset($extraUpdates[$oid]);
+            $this->setParentPrivatePropertyValue('extraUpdates', $extraUpdates);
+        }
+
+        parent::scheduleForDelete($entity);
+    }
+
+    /**
      * @param string $name
      * @return mixed
      */

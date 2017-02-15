@@ -1,4 +1,4 @@
-[![version](https://img.shields.io/badge/version-1.1.1-green.svg)](https://github.com/steevanb/doctrine-events/tree/1.1.1)
+[![version](https://img.shields.io/badge/version-1.2.0-green.svg)](https://github.com/steevanb/doctrine-events/tree/1.2.0)
 [![doctrine](https://img.shields.io/badge/doctrine/orm-^2.5.0-blue.svg)](http://www.doctrine-project.org)
 [![php](https://img.shields.io/badge/php-^5.4.6 || ^7.0-blue.svg)](http://www.php.net)
 ![Lines](https://img.shields.io/badge/code lines-1512-green.svg)
@@ -10,6 +10,8 @@ doctrine-events
 ---------------
 
 Add some events to Doctrine 2.5
+
+Fix a Doctrine UnitOfwork bug with extraUpdates, who are not removed when you add and remove your entity before calling flush()
 
 [Changelog](changelog.md)
 
@@ -36,7 +38,7 @@ Add it to your composer.json :
 ```yml
 {
     "require": {
-        "steevanb/doctrine-events": "^1.1",
+        "steevanb/doctrine-events": "^1.2",
     }
 }
 ```
