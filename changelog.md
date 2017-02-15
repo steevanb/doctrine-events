@@ -1,3 +1,8 @@
+1.2.0 (2017-02-15)
+------------------
+
+- Fix a Doctrine UnitOfwork bug with extraUpdates, who are not removed when you add and remove your entity before calling flush()
+
 1.1.1 (2017-01-17)
 ------------------
 
